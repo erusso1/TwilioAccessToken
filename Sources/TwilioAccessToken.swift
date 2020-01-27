@@ -2,55 +2,59 @@ import Foundation
 import JWT
 
 public struct TwilioAccessToken {
+  
   public var signingKeySid: String
   public var accountSid: String
   public var secret: String
-  public var identity: String?
-  public var ttl: Int
-  public var grants: [Grant] = []
-  public var nbf: Int?
+  public var ttl: TimeInterval
 
-  public init(accountSid: String, signingKeySid: String, secret: String, ttl: Int = 3600) {
+  public var identity: String?
+  public var nbf: Date?
+  
+  var grants: [Grant] = []
+
+  public init(accountSid: String, signingKeySid: String, secret: String, ttl: TimeInterval = 3600) {
     self.signingKeySid = signingKeySid
     self.accountSid = accountSid
     self.secret = secret
     self.ttl = ttl
   }
-
-  public mutating func addGrant(_ grant: Grant) {
+  
+  mutating func addGrant(_ grant: Grant) {
+    
     self.grants.append(grant)
   }
 
-  public func toJwt() -> String {
+  public func toJwt() throws -> String {
+    
     let now = Int(Date().timeIntervalSince1970)
-    let headers = ["cty": "twilio-fpa;v=1"]
-
-    var grantPayload: [String:Any] = [:]
-
-    if let identity = self.identity {
-      grantPayload["identity"] = identity
-    }
+    
+    var grants = Object()
 
     for grant in self.grants {
-      grantPayload[grant.grantKey] = grant.payload
+      grants[grant.grantKey] = grant.payload
     }
-
-    var payload: [String:Any] = [:]
-    payload["jti"] = "\(self.signingKeySid)-\(now)"
-    payload["iss"] = self.signingKeySid
-    payload["sub"] = self.accountSid
-    payload["exp"] = now + self.ttl
-    payload["grants"] = grantPayload
-
-    if let nbf = self.nbf {
-      payload["nbf"] = nbf
+    
+    if let identity = self.identity {
+      grants["identity"] = identity
     }
-
-    let token = JWT.encode(
-      payload,
-      additionalHeaders: headers,
-      algorithm: .hs256(self.secret.data(using: .utf8)!)
+                
+    let payload = Payload(
+        identifier: "\(self.signingKeySid)-\(now)",
+        issuer: self.signingKeySid,
+        sub: self.accountSid,
+        expiration: Date(timeIntervalSinceNow: ttl),
+        notBefore: nbf,
+        grants: grants
     )
+
+    // Sign using secret
+    
+    let header = JWTHeader(alg: "HS256", typ: "JWT", cty: "twilio-fpa;v=1")
+    let jwt = JWT<Payload>(header: header, payload: payload)
+    let tokenData = try JWTSigner.hs256(key: self.secret).sign(jwt)
+    
+    guard let token = String(data: tokenData, encoding: .utf8) else { throw JWTError(identifier: "malformed_token", reason: "Unable to decode JWT token string from data.") }
 
     return token
   }

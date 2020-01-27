@@ -1,11 +1,9 @@
+
 public struct SyncGrant: Grant {
-  public var serviceSid: String?
-  public var endpointId: String?
-
-  public init() {
-
-  }
-
+    
+  public let serviceSid: String?
+  public let endpointId: String?
+    
   public var grantKey: String {
     return "data_sync"
   }
@@ -14,11 +12,11 @@ public struct SyncGrant: Grant {
     var payloadValues: [String:String] = [:]
 
     if let serviceSid = self.serviceSid {
-      payloadValues["service_sid"] = serviceSid
+        payloadValues[Constants.serviceSidKey] = serviceSid
     }
 
     if let endpointId = self.endpointId {
-      payloadValues["endpoint_id"] = endpointId
+        payloadValues[Constants.endpointIdKey] = endpointId
     }
 
     return payloadValues
