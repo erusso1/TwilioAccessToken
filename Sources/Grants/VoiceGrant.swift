@@ -15,6 +15,14 @@ public struct VoiceGrant: Grant {
   let outgoingApplicationParams: Object?
   let pushCredentialSid: String?
   let endpointId: String?
+
+  public init(incomingAllow: Bool? = nil, outgoingApplicationSid: String? = nil, outgoingApplicationParams: [String: Any]? = nil, pushCredentialSid: String? = nil, endpointId: String? = nil) {
+    self.incomingAllow = incomingAllow
+    self.outgoingApplicationSid = outgoingApplicationSid
+    self.outgoingApplicationParams = outgoingApplicationParams
+    self.pushCredentialSid = pushCredentialSid
+    self.endpointId = endpointId
+  }
     
   public var grantKey: String {
     return "voice"

@@ -8,6 +8,11 @@ public struct SyncGrant: Grant {
     return "data_sync"
   }
 
+  public init(serviceSid: String? = nil, endpointId: String? = nil) {
+    self.serviceSid = serviceSid
+    self.endpointId = endpointId
+  }
+
   public var payload: [String:Any] {
     var payloadValues: [String:String] = [:]
 

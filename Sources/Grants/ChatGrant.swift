@@ -5,6 +5,14 @@ public struct ChatGrant: Grant {
   public let endpointId: String?
   public let deploymentRoleSid: String?
   public let pushCredentialSid: String?
+  
+  public init(serviceSid: String? = nil, endpointId: String? = nil, deploymentRoleSid: String? = nil, pushCredentialSid: String? = nil) {
+    
+    self.serviceSid = serviceSid
+    self.endpointId = endpointId
+    self.deploymentRoleSid = deploymentRoleSid
+    self.pushCredentialSid = pushCredentialSid
+  }
     
   public var grantKey: String {
     return "chat"

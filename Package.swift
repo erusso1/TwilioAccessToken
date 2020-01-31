@@ -10,6 +10,7 @@ let package = Package(
             targets: ["TwilioAccessToken"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/vapor/service.git", from: "1.0.0"),
         .package(url: "https://github.com/vapor/jwt.git", from: "3.0.0")
     ],
     targets: [
@@ -17,7 +18,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "TwilioAccessToken",
-            dependencies: ["JWT"],
+            dependencies: ["Service", "JWT"],
             path: "Sources"
         ),
         .testTarget(

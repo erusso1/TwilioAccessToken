@@ -10,4 +10,8 @@ public struct VideoGrant: Grant {
     }
     
     let room: String?
+    
+    public init(room: String? = nil) {
+        self.room = room
+    }
 }

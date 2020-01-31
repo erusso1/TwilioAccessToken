@@ -1,7 +1,8 @@
 import Foundation
 import JWT
+import Service
 
-public struct TwilioAccessToken {
+public struct TwilioAccessToken: Service {
   
   public var signingKeySid: String
   public var accountSid: String
@@ -20,7 +21,7 @@ public struct TwilioAccessToken {
     self.ttl = ttl
   }
   
-  mutating func addGrant(_ grant: Grant) {
+  public mutating func addGrant(_ grant: Grant) {
     
     self.grants.append(grant)
   }
